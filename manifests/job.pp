@@ -48,7 +48,19 @@ define cron::job (
         group   => 0,
         mode    => $mode,
         path    => "/etc/cron.d/${title}",
-        content => template('cron/job.erb'),
+        content => epp('cron/job.epp', {
+            name        => $name,
+            environment => $environment,
+            description => $description,
+            special     => $special,
+            user        => $user,
+            command     => $command,
+            minute      => $minute,
+            hour        => $hour,
+            date        => $date,
+            month       => $month,
+            weekday     => $weekday,
+        }),
       }
     }
   }
