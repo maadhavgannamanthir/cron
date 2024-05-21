@@ -130,7 +130,8 @@ describe 'cron' do
       context 'manage_crontab => true' do
         let(:params) do
           {
-            manage_crontab: true
+            manage_crontab: true,
+            crontab_file_mode: '0644'
           }
         end
 
@@ -172,6 +173,7 @@ describe 'cron' do
           let(:params) do
             {
               manage_crontab: true,
+              crontab_run_parts_mode: '0755',
               crontab_run_parts: {
                 '5min' => { 'user' => 'root', 'minute' => '*/5', 'hour' => '*' },
                 '30min' => { 'user' => 'root', 'minute' => '*/30', 'hour' => '*' }
