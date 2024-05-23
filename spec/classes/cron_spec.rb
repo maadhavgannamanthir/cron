@@ -127,10 +127,12 @@ describe 'cron' do
         }
       end
 
+
       context 'manage_crontab => true' do
         let(:params) do
           {
-            manage_crontab: true
+            manage_crontab: true,
+            crontab_file_mode: '0600',
           }
         end
 
@@ -139,7 +141,7 @@ describe 'cron' do
             'ensure' => 'file',
             'owner' => 'root',
             'group' => '0',
-            'mode' => '0644'
+            'mode' => '0600'
           )
         }
 
@@ -172,6 +174,7 @@ describe 'cron' do
           let(:params) do
             {
               manage_crontab: true,
+              crontab_run_parts_mode: '0700',
               crontab_run_parts: {
                 '5min' => { 'user' => 'root', 'minute' => '*/5', 'hour' => '*' },
                 '30min' => { 'user' => 'root', 'minute' => '*/30', 'hour' => '*' }
@@ -192,7 +195,7 @@ describe 'cron' do
               'ensure' => 'directory',
               'owner' => 'root',
               'group' => '0',
-              'mode' => '0755'
+              'mode' => '0700'
             )
           }
 
@@ -201,7 +204,7 @@ describe 'cron' do
               'ensure' => 'directory',
               'owner' => 'root',
               'group' => '0',
-              'mode' => '0755'
+              'mode' => '0700'
             )
           }
         end
