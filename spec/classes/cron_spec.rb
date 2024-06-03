@@ -127,8 +127,33 @@ describe 'cron' do
         }
       end
 
-
       context 'manage_crontab => true' do
+        let(:params) do
+          {
+            manage_crontab: true,
+          }
+        end
+        it {
+          is_expected.to contain_file('/etc/crontab').with(
+            'ensure' => 'file',
+            'owner' => 'root',
+            'group' => '0',
+            'mode' => '0644'
+          )
+        }
+
+        it {
+          verify_contents(catalogue, '/etc/crontab',
+                          [
+                            'SHELL=/bin/bash',
+                            'PATH=/sbin:/bin:/usr/sbin:/usr/bin',
+                            'MAILTO=root',
+                            '# For details see man 4 crontabs'
+                          ])
+        }
+      end
+      
+      context 'manage_crontab => true with file mode' do
         let(:params) do
           {
             manage_crontab: true,
@@ -170,7 +195,45 @@ describe 'cron' do
           end
         end
 
-        context 'crontab_run_parts defined' do
+        context 'manage_crontab => true with crontab_run_parts defined' do
+          let(:params) do
+            {
+              manage_crontab: true,
+              crontab_run_parts: {
+                '5min' => { 'user' => 'root', 'minute' => '*/5', 'hour' => '*' },
+                '30min' => { 'user' => 'root', 'minute' => '*/30', 'hour' => '*' }
+              }
+            }
+          end
+
+          it {
+            verify_contents(catalogue, '/etc/crontab',
+                            [
+                              '*/5 * * * * root run-parts /etc/cron.5min',
+                              '*/30 * * * * root run-parts /etc/cron.30min'
+                            ])
+          }
+
+          it {
+            is_expected.to contain_file('/etc/cron.5min').with(
+              'ensure' => 'directory',
+              'owner' => 'root',
+              'group' => '0',
+              'mode' => '0755'
+            )
+          }
+
+          it {
+            is_expected.to contain_file('/etc/cron.30min').with(
+              'ensure' => 'directory',
+              'owner' => 'root',
+              'group' => '0',
+              'mode' => '0755'
+            )
+          }
+        end
+
+        context 'manage_crontab => true with crontab_run_part mode defined' do
           let(:params) do
             {
               manage_crontab: true,
